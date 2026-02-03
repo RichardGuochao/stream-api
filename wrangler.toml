@@ -1,0 +1,37 @@
+name = "video-streaming-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# R2 Bucket binding for video storage
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "video-uploads"
+
+# D1 Database binding for metadata
+[[d1_databases]]
+binding = "DB"
+database_name = "video_streaming_db"
+database_id = "your-database-id"
+
+# Environment variables (replace with your values)
+[vars]
+GOOGLE_CLIENT_ID = "your-google-client-id"
+CLOUDFLARE_ACCOUNT_ID = "your-account-id"
+R2_BUCKET_NAME = "video-uploads"
+# Frontend / CORS: comma-separated origins (e.g. your Cloudflare Pages URL)
+# CORS_ORIGINS = "https://your-app.pages.dev"
+# For multiple: CORS_ORIGINS = "https://your-app.pages.dev,https://yourdomain.com"
+# If unset, defaults to http://localhost:5173 and http://localhost:8787
+
+# Optional: for R2 presigned upload URLs (S3-compatible API)
+# R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY set via: wrangler secret put R2_ACCESS_KEY_ID
+# Secrets (set via: wrangler secret put SECRET_NAME):
+# GOOGLE_CLIENT_SECRET
+# JWT_SECRET
+# CLOUDFLARE_STREAM_API_TOKEN
+# R2_ACCESS_KEY_ID (optional, for presigned URLs)
+# R2_SECRET_ACCESS_KEY (optional, for presigned URLs)
+
+[env.production]
+name = "video-streaming-api-prod"

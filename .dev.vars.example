@@ -1,0 +1,8 @@
+# Copy to .dev.vars and fill in values for local development (wrangler dev).
+# .dev.vars is gitignored.
+
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+JWT_SECRET=your-jwt-secret-at-least-32-chars
+CLOUDFLARE_STREAM_API_TOKEN=your-cloudflare-stream-api-token
+R2_ACCESS_KEY_ID=your-r2-access-key-id
+R2_SECRET_ACCESS_KEY=your-r2-secret-access-key
