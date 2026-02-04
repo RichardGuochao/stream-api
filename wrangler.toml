@@ -4,6 +4,13 @@ main = "src/index.ts"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
+# Observability: persist logs and telemetry in the Workers dashboard
+# https://developers.cloudflare.com/workers/observability/
+[observability]
+enabled = true
+# head_sampling_rate: 0 = no requests logged, 1 = 100% (default). Use e.g. 0.1 for 10% to reduce volume.
+head_sampling_rate = 1
+
 # R2 Bucket binding for video storage
 [[r2_buckets]]
 binding = "R2_BUCKET"
