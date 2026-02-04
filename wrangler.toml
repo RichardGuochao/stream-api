@@ -45,14 +45,14 @@ database_id = "e63e4c58-d582-4b27-a6fa-4d1abfe590a8"
 
 # R2_BUCKET_NAME: Name of your R2 bucket for video storage
 #   - Must match the bucket_name in [[r2_buckets]] above
-# R2_BUCKET_NAME = "video-uploads"
+R2_BUCKET_NAME = "video-uploads"
 
 # CORS_ORIGINS: Comma-separated list of allowed origins for CORS
 #   - Set to your Cloudflare Pages frontend URL(s)
 #   - Example: "https://your-app.pages.dev"
 #   - Multiple: "https://your-app.pages.dev,https://yourdomain.com"
 #   - If unset, defaults to http://localhost:5173 and http://localhost:8787
-# CORS_ORIGINS = "https://your-app.pages.dev"
+CORS_ORIGINS = "https://stream-play-cdd.pages.dev"
 
 # R2_PUBLIC_URL (optional): Public URL for your R2 bucket
 #   - If set, GET /videos/:id returns playback_url using this base URL
@@ -76,3 +76,6 @@ database_id = "e63e4c58-d582-4b27-a6fa-4d1abfe590a8"
 
 [env.production]
 name = "video-streaming-api-prod"
+GOOGLE_CLIENT_ID = "903794417748-qm5vk31lkq3f9vufupb23gthicuvvnks.apps.googleusercontent.com"
+R2_BUCKET_NAME = "video-uploads"
+CORS_ORIGINS = "https://stream-play-cdd.pages.dev"
