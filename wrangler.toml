@@ -35,7 +35,7 @@ database_id = "e63e4c58-d582-4b27-a6fa-4d1abfe590a8"
 # GOOGLE_CLIENT_ID: Your Google OAuth 2.0 Client ID
 #   - Used to verify Google ID tokens during login (POST /auth/google)
 #   - Get from: Google Cloud Console → APIs & Services → Credentials
-# GOOGLE_CLIENT_ID = "your-google-client-id"
+GOOGLE_CLIENT_ID = "your-google-client-id"
 
 # CLOUDFLARE_ACCOUNT_ID: Your Cloudflare Account ID (found in dashboard sidebar)
 #   - Used for R2 presigned upload URLs (S3 endpoint: https://{accountId}.r2.cloudflarestorage.com)
