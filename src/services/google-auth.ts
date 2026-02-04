@@ -31,7 +31,8 @@ export async function verifyGoogleIdToken(
       return null;
     }
     return payload;
-  } catch {
+  } catch (error) {
+    console.error('google auth error: ', error);
     return null;
   }
 }
