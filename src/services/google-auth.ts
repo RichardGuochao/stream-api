@@ -19,21 +19,33 @@ export async function verifyGoogleIdToken(
   clientId: string
 ): Promise<GoogleTokenPayload | null> {
   try {
-    const res = await fetch(
-      `${TOKENINFO_URL}?id_token=${encodeURIComponent(idToken)}`
-    );
-    console.log('google auth response: ', JSON.stringify(res, null, 2));
+    const url = `${TOKENINFO_URL}?id_token=${encodeURIComponent(idToken)}`;
+    console.log('[google-auth] url: ', url);
+    const res = await fetch(url);
+
     if (!res.ok) {
+      const errorBody = await res.text();
+      console.error('[google-auth] tokeninfo failed', {
+        status: res.status,
+        statusText: res.statusText,
+        body: errorBody,
+      });
       return null;
     }
+
     const payload = (await res.json()) as GoogleTokenPayload & { aud?: string };
+
     if (payload.aud !== clientId) {
+      console.error('[google-auth] audience mismatch', {
+        expected: clientId,
+        got: payload.aud,
+      });
       return null;
     }
-    console.log('google auth payload: ', JSON.stringify(payload, null, 2));
+
     return payload;
   } catch (error) {
-    console.error('google auth error: ', error);
+    console.error('[google-auth] error:', error);
     return null;
   }
 }
