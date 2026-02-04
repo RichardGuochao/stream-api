@@ -121,7 +121,7 @@ Optional: set `R2_PUBLIC_URL` (e.g. custom domain for your R2 bucket) so `GET /v
 | Command        | Description                    |
 |----------------|--------------------------------|
 | `npm run dev`  | Local dev server (`wrangler dev`) |
-| `npm run build` | Type-check only (`tsc --noEmit`). Use as CI build command. |
+| `npm run build` | Type-check + Worker bundle check (`tsc --noEmit` then `wrangler deploy --dry-run`). Use as CI build command. |
 | `npm run deploy` | Deploy to Cloudflare Workers   |
 | `npm run db:local`  | Run D1 migrations (local)  |
 | `npm run db:remote` | Run D1 migrations (remote) |

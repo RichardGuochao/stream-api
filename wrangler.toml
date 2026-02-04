@@ -1,6 +1,7 @@
-name = "video-streaming-api"
+name = "stream-api"
 main = "src/index.ts"
-compatibility_date = "2024-01-01"
+# 2024-09-23+ required so Node built-ins (http, stream, etc.) resolve when using nodejs_compat
+compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
 # R2 Bucket binding for video storage
