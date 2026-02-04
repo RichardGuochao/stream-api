@@ -1,10 +1,13 @@
 import type { Context } from 'hono';
 
-export function jsonSuccess<T>(c: Context, data: T, status = 200) {
+/** HTTP status codes used by response helpers (Hono expects literal types) */
+type ResponseStatusCode = 200 | 201 | 400 | 401 | 403 | 404 | 500;
+
+export function jsonSuccess<T>(c: Context, data: T, status: ResponseStatusCode = 200) {
   return c.json(data, status);
 }
 
-export function jsonError(c: Context, message: string, status = 400) {
+export function jsonError(c: Context, message: string, status: ResponseStatusCode = 400) {
   return c.json({ error: message }, status);
 }
 
