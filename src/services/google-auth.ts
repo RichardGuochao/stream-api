@@ -22,6 +22,7 @@ export async function verifyGoogleIdToken(
     const res = await fetch(
       `${TOKENINFO_URL}?id_token=${encodeURIComponent(idToken)}`
     );
+    console.log('google auth response: ', res);
     if (!res.ok) {
       return null;
     }
