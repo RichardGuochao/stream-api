@@ -253,6 +253,162 @@ project-root/
   }
   ```
 
+## Authentication Flow
+
+This project uses **Google OAuth 2.0** for user authentication combined with **JWT (JSON Web Tokens)** for session management. The flow separates initial authentication (via Google) from subsequent API authorization (via JWT).
+
+### Authentication Architecture
+
+```
+┌──────────────┐         ┌──────────────┐         ┌──────────────┐
+│   Frontend   │         │   Worker API │         │ Google OAuth │
+│  (Browser)   │         │   (Hono)     │         │              │
+└──────────────┘         └──────────────┘         └──────────────┘
+```
+
+### Flow 1: Initial Login (Google OAuth → JWT)
+
+**Endpoint:** `POST /auth/google`
+
+```
+1. Frontend initiates Google OAuth flow
+   └─> User signs in with Google
+   └─> Google returns ID token to frontend
+
+2. Frontend sends ID token to API
+   POST /auth/google
+   Body: { "id_token": "eyJhbGc..." }
+
+3. API verifies Google ID token
+   └─> Calls Google's token verification API
+   └─> Extracts user info (email, name, picture)
+
+4. API checks/creates user in D1 database
+   └─> SELECT user by email
+   └─> If not exists: INSERT new user with UUID
+   └─> Get userId
+
+5. API creates JWT token
+   └─> Payload: { userId, email, exp }
+   └─> Sign with JWT_SECRET using HS256
+   └─> Expiry: 7 days from creation
+
+6. API returns JWT to frontend
+   Response: {
+     "token": "eyJhbGc...",
+     "user": { "id", "email", "name" }
+   }
+
+7. Frontend stores JWT
+   └─> localStorage/sessionStorage
+   └─> Includes in all future requests
+```
+
+**Code References:**
+- Handler: `src/routes/auth.ts` (lines 11-65)
+- Google verification: `src/services/google-auth.ts`
+- Token creation: `src/utils/jwt.ts` (lines 5-18)
+
+### Flow 2: Protected API Requests (JWT Verification)
+
+**Endpoints:** All routes using `authMiddleware` (videos, streams)
+
+```
+1. Frontend makes API request
+   GET/POST /videos, /streams, etc.
+   Headers: {
+     "Authorization": "Bearer eyJhbGc..."
+   }
+
+2. authMiddleware intercepts request
+   └─> Extracts token from Authorization header
+   └─> Removes "Bearer " prefix
+
+3. JWT verification
+   └─> verify(token, JWT_SECRET, 'HS256')
+   └─> Checks signature matches
+   └─> Checks token not expired
+   └─> Extracts payload { userId, email }
+
+4. If valid:
+   └─> Sets userId in request context: c.set('userId', payload.userId)
+   └─> Proceeds to route handler
+   └─> Handler can access userId via c.get('userId')
+
+5. If invalid:
+   └─> Returns 401 Unauthorized
+   └─> Frontend should redirect to login
+```
+
+**Code References:**
+- Middleware: `src/middleware/auth.ts` (lines 10-24)
+- Token verification: `src/utils/jwt.ts` (lines 20-25)
+- Usage: Applied to routes in `src/routes/videos.ts` and `src/routes/streams.ts`
+
+### Flow 3: Get Current User
+
+**Endpoint:** `GET /auth/me`
+
+```
+1. Frontend requests current user info
+   GET /auth/me
+   Headers: { "Authorization": "Bearer <token>" }
+
+2. API verifies JWT (same as Flow 2)
+
+3. API queries user from database
+   └─> SELECT user WHERE id = payload.userId
+
+4. Returns user data
+   Response: {
+     "id", "email", "name", "avatar_url", "created_at"
+   }
+```
+
+**Code References:**
+- Handler: `src/routes/auth.ts` (lines 67-90)
+
+### JWT Security Details
+
+| Property | Value |
+|----------|-------|
+| **Algorithm** | HS256 (HMAC with SHA-256) |
+| **Secret** | `JWT_SECRET` environment variable (32+ char random string) |
+| **Expiry** | 7 days (604,800 seconds) |
+| **Payload** | `{ userId, email, exp }` |
+
+**Token Lifecycle:**
+```
+Creation (Login)
+    ↓
+Valid for 7 days
+    ↓
+Expiry → 401 Unauthorized → Redirect to login
+```
+
+**Security Considerations:**
+1. `JWT_SECRET` must remain constant — changing it invalidates all tokens
+2. HTTPS required — tokens sent in headers must be encrypted in transit
+3. No token refresh — users must re-login after 7 days
+4. Stateless — no server-side session storage needed
+
+### Authentication Error Handling
+
+| Scenario | Response | Frontend Action |
+|----------|----------|-----------------|
+| Invalid Google ID token | 401 "Invalid token" | Show error, retry login |
+| Missing Authorization header | 401 "Unauthorized" | Redirect to login |
+| Invalid/expired JWT | 401 "Unauthorized" | Clear token, redirect to login |
+| JWT signature mismatch | 401 "Unauthorized" | Clear token, redirect to login |
+| User not found (after valid JWT) | 404 "User not found" | Clear token, redirect to login |
+
+### Environment Variables for Authentication
+
+| Variable | Purpose | Where Used |
+|----------|---------|------------|
+| `GOOGLE_CLIENT_ID` | Verify Google ID tokens | `src/services/google-auth.ts` |
+| `JWT_SECRET` | Sign/verify JWT tokens | `src/utils/jwt.ts`, `src/middleware/auth.ts` |
+
 ## Implementation Guide
 
 ### 1. Setup Dependencies
@@ -835,9 +991,14 @@ export default streams;
 ## Database Schema (D1)
 
 ### Create Database:
+
+Create the D1 database first (required before running migrations):
+
 ```bash
-wrangler d1 create video_streaming_db
+npx wrangler d1 create video_streaming_db
 ```
+
+The command outputs a `[[d1_databases]]` block with a `database_id` (UUID). Copy that block into `wrangler.toml`, or copy only the `database_id` value into the existing `[[d1_databases]]` section. Without a valid `database_id`, remote migrations will fail with an "Invalid uuid" error.
 
 ### Database Migrations:
 
@@ -898,16 +1059,19 @@ CREATE INDEX idx_streams_status ON streams(status);
 ```
 
 ### Run Migrations:
+
+Ensure the D1 database is created and `database_id` is set in `wrangler.toml` (see Create Database above). Then:
+
 ```bash
-# Local development
+# Local development (npm run db:local)
 wrangler d1 execute video_streaming_db --local --file=./migrations/001_create_users.sql
 wrangler d1 execute video_streaming_db --local --file=./migrations/002_create_videos.sql
 wrangler d1 execute video_streaming_db --local --file=./migrations/003_create_streams.sql
 
-# Production
-wrangler d1 execute video_streaming_db --file=./migrations/001_create_users.sql
-wrangler d1 execute video_streaming_db --file=./migrations/002_create_videos.sql
-wrangler d1 execute video_streaming_db --file=./migrations/003_create_streams.sql
+# Production / remote (npm run db:remote) — use --remote so migrations run on Cloudflare D1
+wrangler d1 execute video_streaming_db --remote --file=./migrations/001_create_users.sql
+wrangler d1 execute video_streaming_db --remote --file=./migrations/002_create_videos.sql
+wrangler d1 execute video_streaming_db --remote --file=./migrations/003_create_streams.sql
 ```
 
 ## Development Workflow

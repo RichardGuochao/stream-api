@@ -46,11 +46,24 @@ npm install
 
 ### 2. Create D1 database
 
+Create the database (run this first if you haven’t already):
+
 ```bash
-wrangler d1 create video_streaming_db
+npx wrangler d1 create video_streaming_db
 ```
 
-Copy the `database_id` into `wrangler.toml` under `[[d1_databases]]`.
+The command prints a `[[d1_databases]]` block containing `database_id`. Copy that **entire block** into `wrangler.toml`, replacing the existing `[[d1_databases]]` section, or at least copy the `database_id` value (a UUID) into the existing `database_id` field.
+
+Example output:
+
+```
+[[d1_databases]]
+binding = "DB"
+database_name = "video_streaming_db"
+database_id = "e63e4c58-d582-4b27-a6fa-4d1abfe590a8"
+```
+
+Without a valid `database_id` in `wrangler.toml`, remote migrations (`npm run db:remote`) will fail.
 
 ### 3. Create R2 bucket
 
@@ -59,6 +72,8 @@ wrangler r2 bucket create video-uploads
 ```
 
 ### 4. Run migrations
+
+After the D1 database is created and `database_id` is set in `wrangler.toml`, run migrations:
 
 **Local (for `wrangler dev`):**
 
@@ -71,6 +86,8 @@ npm run db:local
 ```bash
 npm run db:remote
 ```
+
+`db:remote` uses the `--remote` flag so migrations apply to your Cloudflare D1 database, not the local one.
 
 ### 5. Configure secrets and vars
 
