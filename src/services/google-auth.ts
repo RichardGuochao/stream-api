@@ -22,7 +22,7 @@ export async function verifyGoogleIdToken(
     const res = await fetch(
       `${TOKENINFO_URL}?id_token=${encodeURIComponent(idToken)}`
     );
-    console.log('google auth response: ', res);
+    console.log('google auth response: ', JSON.stringify(res, null, 2));
     if (!res.ok) {
       return null;
     }
@@ -30,6 +30,7 @@ export async function verifyGoogleIdToken(
     if (payload.aud !== clientId) {
       return null;
     }
+    console.log('google auth payload: ', JSON.stringify(payload, null, 2));
     return payload;
   } catch (error) {
     console.error('google auth error: ', error);
