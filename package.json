@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
+    "build": "tsc --noEmit",
     "deploy": "wrangler deploy",
     "db:local": "wrangler d1 execute video_streaming_db --local --file=./migrations/001_create_users.sql && wrangler d1 execute video_streaming_db --local --file=./migrations/002_create_videos.sql && wrangler d1 execute video_streaming_db --local --file=./migrations/003_create_streams.sql",
     "db:remote": "wrangler d1 execute video_streaming_db --remote --file=./migrations/001_create_users.sql && wrangler d1 execute video_streaming_db --remote --file=./migrations/002_create_videos.sql && wrangler d1 execute video_streaming_db --remote --file=./migrations/003_create_streams.sql"
