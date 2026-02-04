@@ -41,7 +41,7 @@ GOOGLE_CLIENT_ID = "your-google-client-id"
 #   - Used for R2 presigned upload URLs (S3 endpoint: https://{accountId}.r2.cloudflarestorage.com)
 #   - Used for Cloudflare Stream API calls (live streaming endpoints)
 #   - Used to build stream embed URLs
-# CLOUDFLARE_ACCOUNT_ID = "your-account-id"
+# CLOUDFLARE_ACCOUNT_ID = "903794417748-qm5vk31lkq3f9vufupb23gthicuvvnks.apps.googleusercontent.com"
 
 # R2_BUCKET_NAME: Name of your R2 bucket for video storage
 #   - Must match the bucket_name in [[r2_buckets]] above

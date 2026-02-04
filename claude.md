@@ -1108,6 +1108,8 @@ wrangler deploy
 
 ## Environment Variables & Secrets
 
+**Important:** Variables must be **defined in the `[vars]` section of wrangler.toml** for the Worker to receive them. If you only set or update values in the Cloudflare Dashboard (Workers & Pages → Settings → Variables and Secrets) without defining the corresponding keys in wrangler.toml, those values will **not** take effect—Wrangler uses the config file as the source of truth on deploy and will overwrite or omit variables that are not declared there. So: declare every variable (and optionally its default/placeholder value) in wrangler.toml; you can then override the values in the Dashboard or via secrets, but the keys must exist in the config.
+
 ### Set in wrangler.toml (Public):
 ```toml
 [vars]

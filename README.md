@@ -91,6 +91,8 @@ npm run db:remote
 
 ### 5. Configure secrets and vars
 
+**Note:** Variables must be **defined in the `[vars]` section of wrangler.toml** for the Worker to use them. Values set only in the Cloudflare Dashboard will not take effect unless the variable names are also declared in wrangler.toml (Wrangler uses the config as source of truth on deploy).
+
 In `wrangler.toml`, set:
 
 - `GOOGLE_CLIENT_ID` – Google OAuth client ID  
