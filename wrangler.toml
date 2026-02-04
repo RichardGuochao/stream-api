@@ -35,13 +35,13 @@ database_id = "e63e4c58-d582-4b27-a6fa-4d1abfe590a8"
 # GOOGLE_CLIENT_ID: Your Google OAuth 2.0 Client ID
 #   - Used to verify Google ID tokens during login (POST /auth/google)
 #   - Get from: Google Cloud Console → APIs & Services → Credentials
-GOOGLE_CLIENT_ID = "your-google-client-id"
+GOOGLE_CLIENT_ID = "903794417748-qm5vk31lkq3f9vufupb23gthicuvvnks.apps.googleusercontent.com"
 
 # CLOUDFLARE_ACCOUNT_ID: Your Cloudflare Account ID (found in dashboard sidebar)
 #   - Used for R2 presigned upload URLs (S3 endpoint: https://{accountId}.r2.cloudflarestorage.com)
 #   - Used for Cloudflare Stream API calls (live streaming endpoints)
 #   - Used to build stream embed URLs
-# CLOUDFLARE_ACCOUNT_ID = "903794417748-qm5vk31lkq3f9vufupb23gthicuvvnks.apps.googleusercontent.com"
+# CLOUDFLARE_ACCOUNT_ID = "fb8ce6165f0e5063c6442a38aa8d6304"
 
 # R2_BUCKET_NAME: Name of your R2 bucket for video storage
 #   - Must match the bucket_name in [[r2_buckets]] above
