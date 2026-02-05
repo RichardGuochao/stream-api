@@ -71,6 +71,13 @@ Without a valid `database_id` in `wrangler.toml`, remote migrations (`npm run db
 wrangler r2 bucket create video-uploads
 ```
 
+**R2 CORS (required for browser uploads):** If your frontend uploads to the presigned URL from the browser (e.g. Cloudflare Pages), the R2 bucket must have a CORS policy or the browser will block the request.
+
+- **Dashboard:** R2 → select bucket `video-uploads` → **Settings** → **CORS Policy** → **Add CORS policy** → paste the contents of `r2-cors.json` (or edit origins to match your frontend).
+- **CLI:** `npm run r2:cors` (or `npx wrangler r2 bucket cors set video-uploads --file r2-cors.json`)
+
+Update `r2-cors.json` so `AllowedOrigins` includes your frontend origin (e.g. `https://your-app.pages.dev`). The repo’s `r2-cors.json` includes `https://stream-play-cdd.pages.dev` and localhost.
+
 ### 4. Run migrations
 
 After the D1 database is created and `database_id` is set in `wrangler.toml`, run migrations:
@@ -127,6 +134,7 @@ Optional: set `R2_PUBLIC_URL` (e.g. custom domain for your R2 bucket) so `GET /v
 | `npm run deploy` | Deploy to Cloudflare Workers   |
 | `npm run db:local`  | Run D1 migrations (local)  |
 | `npm run db:remote` | Run D1 migrations (remote) |
+| `npm run r2:cors` | Apply R2 CORS policy from `r2-cors.json` to bucket `video-uploads` |
 
 ## API Overview
 
