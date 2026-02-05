@@ -54,10 +54,24 @@ R2_BUCKET_NAME = "video-uploads"
 #   - If unset, defaults to http://localhost:5173 and http://localhost:8787
 CORS_ORIGINS = "https://stream-play-cdd.pages.dev"
 
-# R2_PUBLIC_URL (optional): Public URL for your R2 bucket
-#   - If set, GET /videos/:id returns playback_url using this base URL
-#   - Example: "https://videos.yourdomain.com" or R2 public bucket URL
-# R2_PUBLIC_URL = "https://your-r2-public-url"
+# R2_PUBLIC_URL (required for playback_url): Base URL for public access to your R2 bucket
+#   - If set, GET /videos/:id returns playback_url = R2_PUBLIC_URL + "/" + video_key
+#   - Without it, playback_url will be null and clients cannot play videos directly
+#
+# How to get this URL:
+#   Option A - r2.dev (development only, rate-limited):
+#     1. R2 → select bucket "video-uploads" → Settings
+#     2. Under "Public Development URL", select Enable → type "allow" to confirm
+#     3. Copy the "Public Bucket URL" shown (e.g. https://pub-xxxxx.r2.dev)
+#     4. Set R2_PUBLIC_URL = "https://pub-xxxxx.r2.dev" (no trailing slash)
+#
+#   Option B - Custom domain (recommended for production):
+#     1. Ensure your domain is added to Cloudflare (DNS)
+#     2. R2 → select bucket → Settings → Custom Domains → Add
+#     3. Enter subdomain (e.g. videos.yourdomain.com) → Connect Domain
+#     4. Set R2_PUBLIC_URL = "https://videos.yourdomain.com" (no trailing slash)
+#
+R2_PUBLIC_URL = "https://pub-a9b9c70a91734f9791ac731add1d0a5a.r2.dev"
 
 # =============================================================================
 # Secrets (must be set via Cloudflare Dashboard or `wrangler secret put`)

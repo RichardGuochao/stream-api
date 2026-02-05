@@ -137,13 +137,14 @@ project-root/
 - **GET** `/videos/:id`
 - **Description**: Get video details and playback URL
 - **Headers**: `Authorization: Bearer {token}` (optional, depends on visibility)
+- **Note**: `playback_url` is set only when `R2_PUBLIC_URL` is configured (see Environment Variables).
 - **Response**:
   ```json
   {
     "id": "video_id",
     "title": "My Video",
     "description": "Video description",
-    "playback_url": "https://r2-public-url/video.mp4",
+    "playback_url": "https://your-r2-public-url/video-key.mp4",
     "visibility": "public",
     "user_id": "user_id",
     "created_at": "2024-01-01T00:00:00.000Z"
@@ -1116,6 +1117,30 @@ wrangler deploy
 GOOGLE_CLIENT_ID = "your-google-oauth-client-id"
 CLOUDFLARE_ACCOUNT_ID = "your-cloudflare-account-id"
 ```
+
+### R2_PUBLIC_URL (Required for playback_url)
+
+`R2_PUBLIC_URL` is the base URL for public access to your R2 bucket. `GET /videos/:id` builds `playback_url` as `R2_PUBLIC_URL + "/" + video_key`. Without it, `playback_url` is `null` and clients cannot play videos directly.
+
+**How to get this URL:**
+
+**Option A — r2.dev (development only, rate-limited):**
+
+1. Cloudflare Dashboard → **R2** → select bucket `video-uploads` → **Settings**.
+2. Under **Public Development URL**, select **Enable**.
+3. Type `allow` to confirm, then select **Allow**.
+4. Copy the **Public Bucket URL** shown (e.g. `https://pub-xxxxx.r2.dev`).
+5. Set `R2_PUBLIC_URL = "https://pub-xxxxx.r2.dev"` (no trailing slash).
+
+**Option B — Custom domain (recommended for production):**
+
+1. Add your domain to Cloudflare (DNS zone).
+2. R2 → select bucket `video-uploads` → **Settings** → **Custom Domains** → **Add**.
+3. Enter a subdomain (e.g. `videos.yourdomain.com`) → **Connect Domain**.
+4. Wait for status to become **Active**.
+5. Set `R2_PUBLIC_URL = "https://videos.yourdomain.com"` (no trailing slash).
+
+Custom domains support caching, WAF, and access control; `r2.dev` is for development and is rate-limited.
 
 ### Set via Wrangler CLI (Secrets):
 ```bash

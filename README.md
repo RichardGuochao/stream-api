@@ -123,7 +123,9 @@ wrangler secret put R2_SECRET_ACCESS_KEY
 
 Create R2 API tokens in the Cloudflare dashboard (R2 → Manage R2 API Tokens). Use the same account and bucket name as in `wrangler.toml` (`R2_BUCKET_NAME` / `video-uploads`).
 
-Optional: set `R2_PUBLIC_URL` (e.g. custom domain for your R2 bucket) so `GET /videos/:id` can return a `playback_url`.
+**R2_PUBLIC_URL (required for playback_url):** Base URL for public access to your R2 bucket. Without it, `GET /videos/:id` returns `playback_url: null`. Set this after enabling public access on your bucket:
+- **r2.dev (dev only):** R2 → bucket → Settings → Public Development URL → Enable, then copy the Public Bucket URL.
+- **Custom domain (production):** R2 → bucket → Settings → Custom Domains → Add subdomain (e.g. `videos.yourdomain.com`).
 
 ## Scripts
 
